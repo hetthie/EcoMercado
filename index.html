@@ -66,6 +66,67 @@
             transform: scale(0.95);
         }
 
+        #captureBtn {
+            background: rgba(76, 175, 80, 0.3);
+            font-size: 18px;
+        }
+
+        #captureBtn:hover {
+            background: rgba(76, 175, 80, 0.5);
+        }
+
+        #analysisScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        #capturedImage {
+            max-width: 90%;
+            max-height: 60vh;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        #analysisMessage {
+            font-size: 24px;
+            font-weight: 600;
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            min-width: 300px;
+        }
+
+        .analyzing {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .result {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .message {
             text-align: center;
             padding: 20px;
@@ -87,17 +148,30 @@
     </div>
 
     <video id="video" autoplay playsinline></video>
+    
+    <canvas id="canvas" style="display: none;"></canvas>
+    
+    <div id="analysisScreen" style="display: none;">
+        <img id="capturedImage" alt="Foto capturada">
+        <div id="analysisMessage"></div>
+    </div>
 
     <div class="controls">
         <button id="startBtn">Iniciar Cámara</button>
         <button id="switchBtn" style="display: none;">Cambiar Cámara</button>
+        <button id="captureBtn" style="display: none;">📸 Capturar</button>
     </div>
 
     <script>
         const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
         const startBtn = document.getElementById('startBtn');
         const switchBtn = document.getElementById('switchBtn');
+        const captureBtn = document.getElementById('captureBtn');
         const message = document.getElementById('message');
+        const analysisScreen = document.getElementById('analysisScreen');
+        const capturedImage = document.getElementById('capturedImage');
+        const analysisMessage = document.getElementById('analysisMessage');
 
         let stream = null;
         let currentFacingMode = 'user';
@@ -119,6 +193,7 @@
                 video.classList.add('active');
                 message.style.display = 'none';
                 startBtn.textContent = 'Detener Cámara';
+                captureBtn.style.display = 'block';
                 
                 const devices = await navigator.mediaDevices.enumerateDevices();
                 const videoDevices = devices.filter(device => device.kind === 'videoinput');
@@ -145,9 +220,33 @@
                 stream = null;
                 startBtn.textContent = 'Iniciar Cámara';
                 switchBtn.style.display = 'none';
+                captureBtn.style.display = 'none';
                 message.innerHTML = '<p>Presiona "Iniciar Cámara" para comenzar</p>';
                 message.style.display = 'block';
             }
+        }
+
+        function capturePhoto() {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const imageDataUrl = canvas.toDataURL('image/jpeg');
+            capturedImage.src = imageDataUrl;
+            
+            analysisScreen.style.display = 'flex';
+            analysisMessage.textContent = 'Iniciando análisis...';
+            analysisMessage.className = 'analyzing';
+            
+            setTimeout(() => {
+                analysisMessage.textContent = '✅ El producto está maduro';
+                analysisMessage.className = 'result';
+                
+                setTimeout(() => {
+                    analysisScreen.style.display = 'none';
+                }, 3000);
+            }, 2000);
         }
 
         startBtn.addEventListener('click', () => {
@@ -161,6 +260,12 @@
         switchBtn.addEventListener('click', () => {
             currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
             startCamera(currentFacingMode);
+        });
+
+        captureBtn.addEventListener('click', capturePhoto);
+
+        analysisScreen.addEventListener('click', () => {
+            analysisScreen.style.display = 'none';
         });
     </script>
 </body>
