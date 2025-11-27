@@ -72,24 +72,47 @@
             color: #555;
         }
 
-        .back-button {
-            margin: 20px auto;
+        .button-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px;
+        }
+
+        .btn {
             padding: 15px 40px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border: 2px solid white;
-            color: white;
             border-radius: 25px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            border: none;
             display: none;
+        }
+
+        .back-button {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid white;
+            color: white;
         }
 
         .back-button:hover {
             background: rgba(255, 255, 255, 0.3);
             transform: scale(1.05);
+        }
+
+        .process-button {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .process-button:hover {
+            background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
         }
 
         .analyzing {
@@ -120,12 +143,16 @@
     
     <div id="analysisContent"></div>
     
-    <button class="back-button" id="backBtn">Volver a la Cámara</button>
+    <div class="button-container">
+        <button class="btn process-button" id="processBtn">Procesar/Tratar Producto</button>
+        <button class="btn back-button" id="backBtn">Volver a la Cámara</button>
+    </div>
 
     <script>
         const capturedImage = document.getElementById('capturedImage');
         const analysisContent = document.getElementById('analysisContent');
         const backBtn = document.getElementById('backBtn');
+        const processBtn = document.getElementById('processBtn');
 
         // Cargar la imagen desde localStorage
         window.addEventListener('load', () => {
@@ -153,6 +180,7 @@
                         </div>
                     `;
                     backBtn.style.display = 'block';
+                    processBtn.style.display = 'block';
                 }, 2000);
             } else {
                 // Si no hay imagen, redirigir a la página principal
@@ -165,6 +193,11 @@
             localStorage.removeItem('capturedImage');
             // Volver a la página principal
             window.location.href = 'index.html';
+        });
+
+        processBtn.addEventListener('click', () => {
+            // De momento no tiene función
+            console.log('Botón Procesar/Tratar Producto presionado');
         });
     </script>
 </body>
