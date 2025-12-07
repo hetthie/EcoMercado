@@ -26,7 +26,8 @@ export default async function handler(req, res) {
         const base64Image = image.includes(',') ? image.split(',')[1] : image;
 
         // Llamar a Gemini API
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+       // ✅ CORRECTO
+const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
         const response = await fetch(geminiUrl, {
             method: 'POST',
