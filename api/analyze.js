@@ -25,8 +25,9 @@ export default async function handler(req, res) {
         const imageBuffer = Buffer.from(base64Image, 'base64');
 
         // PASO 1: Usar modelo de clasificación de imágenes
-        const classificationResponse = await fetch(
-            'https://api-inference.huggingface.co/models/google/vit-base-patch16-224',
+        // ✅ NUEVO
+const classificationResponse = await fetch(
+    'https://router.huggingface.co/models/google/vit-base-patch16-224',
             {
                 method: 'POST',
                 headers: {
