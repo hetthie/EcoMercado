@@ -1,0 +1,14 @@
+{
+  "name": "analizador-alimentos",
+  "version": "1.0.0",
+  "description": "Aplicación web para análisis de alimentos con IA",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "keywords": ["gemini", "ai", "food-analysis"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "vercel": "^33.0.0"
+  }
+}
