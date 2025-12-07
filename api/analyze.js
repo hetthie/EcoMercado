@@ -3,20 +3,23 @@ export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Método no permitido' });
     }
+    
     try {
         const { image } = req.body;
         if (!image) {
             return res.status(400).json({ error: 'No se proporcionó imagen' });
         }
+        
         const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
         if (!CLAUDE_API_KEY) {
             console.error('API key no configurada');
             return res.status(500).json({ error: 'Configuración del servidor incompleta' });
         }
+        
         // Extraer base64 sin prefijo
         const base64Image = image.includes(',') ? image.split(',')[1] : image;
         
-        // Llamar a Claude API
+        // Llamar a Claude API con el modelo correcto
         const response = await fetch('https://api.anthropic.com/v1/messages', {
             method: 'POST',
             headers: {
@@ -25,7 +28,7 @@ export default async function handler(req, res) {
                 'anthropic-version': '2023-06-01'
             },
             body: JSON.stringify({
-                model: 'claude-3-5-sonnet-20250219', // 🔄 MODELO ACTUALIZADO
+                model: 'claude-sonnet-4-5-20250929', // ✅ MODELO CORRECTO
                 max_tokens: 1024,
                 messages: [{
                     role: 'user',
@@ -68,11 +71,13 @@ Si no es ninguno de los 5 productos, responde:
                 }]
             })
         });
+        
         if (!response.ok) {
             const errorData = await response.json();
             console.error('Error de Claude:', errorData);
             return res.status(response.status).json(errorData);
         }
+        
         const data = await response.json();
         const textoRespuesta = data.content[0].text;
         
@@ -81,6 +86,7 @@ Si no es ninguno de los 5 productos, responde:
         const resultado = JSON.parse(jsonMatch ? jsonMatch[0] : textoRespuesta);
         
         return res.status(200).json(resultado);
+        
     } catch (error) {
         console.error('Error en serverless function:', error);
         return res.status(500).json({ 
