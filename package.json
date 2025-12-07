@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Aplicación web para análisis de alimentos con IA",
   "scripts": {
-    "dev": "vercel dev"
+    "start": "vercel dev"
   },
   "keywords": ["gemini", "ai", "food-analysis"],
   "author": "",
