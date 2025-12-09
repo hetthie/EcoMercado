@@ -1,5 +1,14 @@
 // ========== LÓGICA DE PÁGINA DE REGISTRO ==========
 
+// Emojis por producto
+const EMOJIS_PRODUCTOS = {
+    'Plátano': '🍌',
+    'Tomate': '🍅',
+    'Aguacate': '🥑',
+    'Manzana': '🍎',
+    'Lechuga': '🥬'
+};
+
 // Inicializar página de registro
 document.addEventListener('DOMContentLoaded', function() {
     cargarProductos();
@@ -14,6 +23,7 @@ function cargarProductos() {
     if (productos.length === 0) {
         listaContainer.style.display = 'none';
         emptyState.style.display = 'block';
+        actualizarContadores(0, 0, 0);
         return;
     }
     
@@ -23,23 +33,59 @@ function cargarProductos() {
     // Ordenar por fecha (más recientes primero)
     productos.sort((a, b) => new Date(b.fechaRegistro) - new Date(a.fechaRegistro));
     
+    // Calcular estadísticas
+    const stats = calcularEstadisticas(productos);
+    actualizarContadores(stats.aptos, stats.maduracion, stats.fuera);
+    
     // Generar HTML
     listaContainer.innerHTML = productos.map(producto => crearTarjetaProducto(producto)).join('');
 }
 
-// Crear tarjeta de producto
+// Calcular estadísticas de productos
+function calcularEstadisticas(productos) {
+    let aptos = 0;
+    let maduracion = 0;
+    let fuera = 0;
+    
+    productos.forEach(producto => {
+        const diasRestantes = calcularDiasRestantes(producto);
+        
+        if (diasRestantes === 0) {
+            fuera++;
+        } else if (diasRestantes <= 2) {
+            maduracion++;
+        } else {
+            aptos++;
+        }
+    });
+    
+    return { aptos, maduracion, fuera };
+}
+
+// Actualizar contadores
+function actualizarContadores(aptos, maduracion, fuera) {
+    document.getElementById('count-aptos').textContent = aptos;
+    document.getElementById('count-maduracion').textContent = maduracion;
+    document.getElementById('count-fuera').textContent = fuera;
+}
+
+// Crear tarjeta de producto con nuevo diseño
 function crearTarjetaProducto(producto) {
     const diasRestantes = calcularDiasRestantes(producto);
-    const diasTranscurridos = calcularDiasTranscurridos(producto.fechaRegistro);
-    const alerta = requiereAlerta(producto);
+    const emoji = EMOJIS_PRODUCTOS[producto.producto] || '🍎';
     
-    // Determinar clase de alerta
-    let alertaClass = '';
-    let alertaHTML = '';
+    // Determinar estado y clase
+    let estadoTexto, estadoClass;
     
-    if (alerta) {
-        alertaClass = alerta.nivel === 'critico' ? 'producto-critico' : 'producto-advertencia';
-        alertaHTML = `<div class="alerta-badge ${alerta.nivel}">${alerta.mensaje}</div>`;
+    if (diasRestantes === 0) {
+        estadoTexto = 'Fuera del rango de venta';
+        estadoClass = 'status-fuera';
+    } else if (diasRestantes <= 2) {
+        estadoTexto = 'Maduración avanzada';
+        estadoClass = 'status-maduracion-badge';
+    } else {
+        estadoTexto = 'Aptos para la venta';
+        estadoClass = 'status-aptos';
     }
     
     // Formatear fecha
@@ -51,41 +97,21 @@ function crearTarjetaProducto(producto) {
     });
     
     return `
-        <div class="producto-card ${alertaClass}">
-            ${alertaHTML}
-            
-            <div class="producto-header">
-                <h3>${producto.producto}</h3>
-                <button class="btn-eliminar" onclick="confirmarEliminar(${producto.id})" title="Eliminar">
+        <div class="producto-card-nuevo">
+            <div class="producto-header-flex">
+                <span class="producto-emoji-icon">${emoji}</span>
+                <div class="producto-info-box">
+                    <div class="producto-name-styled">${producto.producto}</div>
+                    <div class="producto-date-styled">${fechaFormateada}</div>
+                </div>
+                <button class="btn-eliminar-nuevo" onclick="confirmarEliminar(${producto.id})" title="Eliminar">
                     🗑️
                 </button>
             </div>
-            
-            <div class="producto-info">
-                <div class="info-row">
-                    <span class="info-label">Estado:</span>
-                    <span class="info-value">${producto.estado}</span>
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label">Registrado:</span>
-                    <span class="info-value">${fechaFormateada}</span>
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label">Días transcurridos:</span>
-                    <span class="info-value">${diasTranscurridos} días</span>
-                </div>
-                
-                <div class="info-row destacado">
-                    <span class="info-label">⏱️ Días restantes:</span>
-                    <span class="info-value dias-restantes">${diasRestantes} días</span>
-                </div>
-            </div>
-            
-            <div class="producto-footer">
-                <span class="confianza-badge">${producto.confianza}% confianza</span>
-            </div>
+            <span class="status-badge-nuevo ${estadoClass}">
+                <span class="status-indicator-dot"></span>
+                ${estadoTexto}
+            </span>
         </div>
     `;
 }

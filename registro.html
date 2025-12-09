@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EcoMercado - Registro</title>
     <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/registro-styles.css">
 </head>
 <body>
     <!-- HEADER -->
@@ -14,17 +15,51 @@
 
     <!-- MAIN CONTENT -->
     <main class="app-main">
-        <div class="registro-container">
-            <h1 class="registro-title">Mis Productos</h1>
-            
-            <div id="productos-lista" class="productos-lista">
-                <!-- Lista generada por JavaScript -->
+        <div class="registro-wrapper">
+            <!-- Logo Header -->
+            <div class="registro-header-logo">
+                <div class="leaf-icon"></div>
+                <div class="logo-text">ECO MERCADO</div>
             </div>
             
-            <div id="empty-state" class="empty-state">
-                <div class="empty-icon">📦</div>
+            <h1 class="registro-title-styled">Registro de Análisis</h1>
+
+            <!-- Resumen -->
+            <div class="summary-cards">
+                <div class="summary-card-box green">
+                    <div class="summary-number" id="count-aptos">0</div>
+                    <div class="summary-label-small">Aptos<br>venta</div>
+                </div>
+                <div class="summary-card-box yellow">
+                    <div class="summary-number" id="count-maduracion">0</div>
+                    <div class="summary-label-small">Maduración<br>avanzada</div>
+                </div>
+                <div class="summary-card-box red">
+                    <div class="summary-number" id="count-fuera">0</div>
+                    <div class="summary-label-small">Fuera de<br>rango</div>
+                </div>
+            </div>
+            
+            <!-- Lista de productos -->
+            <div class="productos-scroll" id="productos-lista">
+                <!-- Generado por JavaScript -->
+            </div>
+            
+            <!-- Empty state -->
+            <div id="empty-state" class="empty-state-nuevo" style="display: none;">
+                <div class="empty-icon-nuevo">📦</div>
                 <p>No tienes productos registrados</p>
-                <p class="empty-subtitle">Analiza un producto para agregarlo aquí</p>
+                <p class="empty-subtitle-nuevo">Analiza un producto para agregarlo aquí</p>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="button-container-registro">
+                <button class="action-btn-styled back-btn-styled" onclick="window.location.href='/index.html'">
+                    <svg class="icon-svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+                    </svg>
+                    Volver a Cámara
+                </button>
             </div>
         </div>
     </main>
