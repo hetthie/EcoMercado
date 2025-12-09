@@ -1,4 +1,8 @@
 {
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/registro", "destination": "/registro.html" }
+  ],
   "functions": {
     "api/analyze.js": {
       "maxDuration": 30

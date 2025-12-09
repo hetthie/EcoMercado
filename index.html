@@ -3,42 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analizador de Alimentos</title>
+    <title>EcoMercado - Analizador de Alimentos</title>
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
-    <!-- PANTALLA 1: CÁMARA -->
-    <div id="pantalla-camara" class="pantalla activa">
-        <div id="message" class="message">
-            <p>Presiona "Iniciar Cámara" para comenzar</p>
+    <!-- HEADER -->
+    <header class="app-header">
+        <!-- Vacío por ahora, para logo futuro -->
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="app-main">
+        <!-- PANTALLA 1: CÁMARA -->
+        <div id="pantalla-camara" class="pantalla activa">
+            <div id="message" class="message">
+                <p>Presiona "Iniciar Cámara" para comenzar</p>
+            </div>
+
+            <video id="video" autoplay playsinline></video>
+            <canvas id="canvas"></canvas>
+
+            <div class="controls">
+                <button id="startBtn">Iniciar Cámara</button>
+                <button id="switchBtn" style="display: none;">Cambiar Cámara</button>
+                <button id="captureBtn" style="display: none;">📸 Capturar</button>
+            </div>
         </div>
 
-        <video id="video" autoplay playsinline></video>
-        <canvas id="canvas"></canvas>
-
-        <div class="controls">
-            <button id="startBtn">Iniciar Cámara</button>
-            <button id="switchBtn" style="display: none;">Cambiar Cámara</button>
-            <button id="captureBtn" style="display: none;">📸 Capturar</button>
+        <!-- PANTALLA 2: ANÁLISIS -->
+        <div id="pantalla-analisis" class="pantalla">
+            <div class="analysis-header">Análisis del Producto</div>
+            
+            <div class="image-container">
+                <img id="foto-capturada" alt="Foto capturada">
+            </div>
+            
+            <div id="resultado-container"></div>
+            
+            <div id="guia-container" style="display: none;"></div>
+            
+            <div class="button-group" id="botones-analisis"></div>
         </div>
-    </div>
+    </main>
 
-    <!-- PANTALLA 2: ANÁLISIS -->
-    <div id="pantalla-analisis" class="pantalla">
-        <div class="analysis-header">Análisis del Producto</div>
-        
-        <div class="image-container">
-            <img id="foto-capturada" alt="Foto capturada">
-        </div>
-        
-        <div id="resultado-container"></div>
-        
-        <div class="button-group" id="botones-analisis"></div>
-    </div>
+    <!-- FOOTER TABS -->
+    <footer class="tabs-footer">
+        <div class="tab-spacer"></div>
+        <a href="/index.html" class="tab active">
+            <span class="tab-icon">📷</span>
+            <span class="tab-label">Cámara</span>
+        </a>
+        <a href="/registro.html" class="tab">
+            <span class="tab-icon">📋</span>
+            <span class="tab-label">Registro</span>
+        </a>
+    </footer>
 
     <!-- Scripts -->
+    <script src="assets/js/datos.js"></script>
+    <script src="assets/js/storage.js"></script>
+    <script src="assets/js/navigation.js"></script>
     <script src="assets/js/camera.js"></script>
     <script src="assets/js/api.js"></script>
-    <script src="assets/js/ui.js"></script>
+    <script src="assets/js/analisis.js"></script>
 </body>
 </html>
