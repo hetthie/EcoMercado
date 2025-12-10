@@ -371,36 +371,13 @@ function cerrarEdicion(event) {
     productoEnEdicion = null;
 }
 
-// Ver guía del producto
+// Ver guía del producto - NAVEGAR A PÁGINA SEPARADA
 function verGuiaProducto(producto, estado) {
-    const guiaTexto = GUIAS[producto]?.[estado] || 'Guía no disponible';
+    // Construir URL con parámetros
+    const url = `/guia.html?producto=${encodeURIComponent(producto)}&estado=${encodeURIComponent(estado)}`;
     
-    const modalHTML = `
-        <div class="modal-overlay" id="modal-guia" onclick="cerrarGuia(event)">
-            <div class="modal-content modal-guia" onclick="event.stopPropagation()">
-                <div class="guia-header-modal">
-                    <h3>📖 Guía de Tratamiento</h3>
-                    <h4>${producto} - ${estado}</h4>
-                </div>
-                <div class="guia-contenido-modal">
-                    ${guiaTexto.split('\n\n').map(parrafo => `<p>${parrafo}</p>`).join('')}
-                </div>
-                <button class="btn-cerrar-guia" onclick="cerrarGuia()">Cerrar</button>
-            </div>
-        </div>
-    `;
-    
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-}
-
-// Cerrar modal de guía
-function cerrarGuia(event) {
-    if (event && event.target.className !== 'modal-overlay') return;
-    
-    const modal = document.getElementById('modal-guia');
-    if (modal) {
-        modal.remove();
-    }
+    // Navegar a la página de guía
+    window.location.href = url;
 }
 
 // Confirmar eliminación
