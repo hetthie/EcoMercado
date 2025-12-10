@@ -280,6 +280,67 @@ body {
     color: #64748b;
 }
 
+/* Alerta de eliminación */
+.alerta-eliminacion {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 12px;
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border-radius: 8px;
+    border-left: 4px solid #ef4444;
+    animation: pulse-warning 2s ease-in-out infinite;
+}
+
+@keyframes pulse-warning {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+    }
+}
+
+.alerta-eliminacion-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.alerta-eliminacion-texto {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.alerta-eliminacion-texto strong {
+    font-size: 13px;
+    color: #dc2626;
+    font-weight: 700;
+}
+
+.alerta-eliminacion-texto span {
+    font-size: 11px;
+    color: #991b1b;
+}
+
+/* Producto vencido - estilo atenuado */
+.producto-card-nuevo.producto-vencido {
+    opacity: 0.75;
+    border: 2px solid #fecaca;
+}
+
+.producto-card-nuevo.producto-vencido .producto-emoji-icon {
+    filter: grayscale(50%);
+}
+
+/* Badge de estado vencido */
+.status-vencido {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%) !important;
+    color: #dc2626 !important;
+    border: 1px solid #ef4444 !important;
+}
+
 /* Botón ver guía */
 .btn-ver-guia {
     width: 100%;

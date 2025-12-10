@@ -23,7 +23,20 @@ function cargarProductos() {
     const listaContainer = document.getElementById('productos-lista');
     const emptyState = document.getElementById('empty-state');
     
-    if (productos.length === 0) {
+    // Auto-eliminar productos vencidos hace más de 2 días
+    const productosValidos = productos.filter(producto => {
+        const diasRestantes = calcularDiasRestantes(producto);
+        const diasVencido = Math.abs(diasRestantes);
+        
+        // Si está vencido hace más de 2 días, eliminar
+        if (diasRestantes < 0 && diasVencido > 2) {
+            eliminarProducto(producto.id);
+            return false; // No incluir en lista
+        }
+        return true; // Mantener
+    });
+    
+    if (productosValidos.length === 0) {
         listaContainer.style.display = 'none';
         emptyState.style.display = 'block';
         actualizarContadores(0, 0, 0);
@@ -34,14 +47,14 @@ function cargarProductos() {
     emptyState.style.display = 'none';
     
     // Ordenar por fecha (más recientes primero)
-    productos.sort((a, b) => new Date(b.fechaRegistro) - new Date(a.fechaRegistro));
+    productosValidos.sort((a, b) => new Date(b.fechaRegistro) - new Date(a.fechaRegistro));
     
     // Calcular estadísticas
-    const stats = calcularEstadisticas(productos);
+    const stats = calcularEstadisticas(productosValidos);
     actualizarContadores(stats.aptos, stats.maduracion, stats.fuera);
     
     // Generar HTML
-    listaContainer.innerHTML = productos.map(producto => crearTarjetaProducto(producto)).join('');
+    listaContainer.innerHTML = productosValidos.map(producto => crearTarjetaProducto(producto)).join('');
 }
 
 // Calcular estadísticas de productos
@@ -81,7 +94,18 @@ function crearTarjetaProducto(producto) {
     // Determinar estado y clase
     let estadoTexto, estadoClass;
     
-    if (diasRestantes === 0) {
+    // Verificar si está vencido
+    const estaVencido = diasRestantes < 0;
+    const diasVencido = Math.abs(diasRestantes);
+    
+    if (estaVencido) {
+        // Producto vencido
+        const diasParaEliminacion = 2 - diasVencido;
+        estadoTexto = diasParaEliminacion > 0 
+            ? `Vencido - Se eliminará en ${diasParaEliminacion} día${diasParaEliminacion > 1 ? 's' : ''}`
+            : 'Vencido - Eliminación inminente';
+        estadoClass = 'status-vencido';
+    } else if (diasRestantes === 0) {
         estadoTexto = 'Fuera del rango de venta';
         estadoClass = 'status-fuera';
     } else if (diasRestantes <= 2) {
@@ -100,9 +124,21 @@ function crearTarjetaProducto(producto) {
         year: 'numeric' 
     });
     
-    // HTML para próximo estado
+    // HTML para próximo estado o alerta de vencimiento
     let proximoEstadoHTML = '';
-    if (proximoEstado) {
+    if (estaVencido) {
+        // Alerta de eliminación próxima
+        const diasParaEliminacion = 2 - diasVencido;
+        proximoEstadoHTML = `
+            <div class="alerta-eliminacion">
+                <div class="alerta-eliminacion-icon">⚠️</div>
+                <div class="alerta-eliminacion-texto">
+                    <strong>Producto vencido</strong>
+                    <span>Se eliminará automáticamente ${diasParaEliminacion > 0 ? `en ${diasParaEliminacion} día${diasParaEliminacion > 1 ? 's' : ''}` : 'pronto'}</span>
+                </div>
+            </div>
+        `;
+    } else if (proximoEstado) {
         proximoEstadoHTML = `
             <div class="proximo-estado-info">
                 <div class="dias-proximo">⏱️ Quedan ${proximoEstado.diasHasta} días</div>
@@ -119,7 +155,7 @@ function crearTarjetaProducto(producto) {
     }
     
     return `
-        <div class="producto-card-nuevo">
+        <div class="producto-card-nuevo ${estaVencido ? 'producto-vencido' : ''}">
             <div class="producto-header-flex">
                 <span class="producto-emoji-icon">${emoji}</span>
                 <div class="producto-info-box">
@@ -143,9 +179,11 @@ function crearTarjetaProducto(producto) {
             
             ${proximoEstadoHTML}
             
-            <button class="btn-ver-guia" onclick="verGuiaProducto('${producto.producto}', '${producto.estado}')">
-                📖 Ver Guía de Tratamiento
-            </button>
+            ${!estaVencido ? `
+                <button class="btn-ver-guia" onclick="verGuiaProducto('${producto.producto}', '${producto.estado}')">
+                    📖 Ver Guía de Tratamiento
+                </button>
+            ` : ''}
         </div>
     `;
 }
