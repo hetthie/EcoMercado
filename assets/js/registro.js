@@ -139,29 +139,48 @@ function crearTarjetaProducto(producto) {
             </div>
         `;
     } else if (diasRestantes === 0) {
-        // Vence hoy - estado final
+        // Vence hoy
         proximoEstadoHTML = `
             <div class="proximo-estado-info estado-final">
                 <div class="dias-proximo critico">⏱️ ¡Vence HOY!</div>
                 <div class="siguiente-estado">→ Último día de venta</div>
             </div>
         `;
-    } else if (proximoEstado && diasRestantes > 0) {
-        // Estado normal con días restantes
-        proximoEstadoHTML = `
-            <div class="proximo-estado-info">
-                <div class="dias-proximo">⏱️ Quedan ${proximoEstado.diasHasta} día${proximoEstado.diasHasta !== 1 ? 's' : ''}</div>
-                <div class="siguiente-estado">→ Próximo estado: ${proximoEstado.siguienteEstado}</div>
-            </div>
-        `;
-    } else if (!proximoEstado && diasRestantes > 0) {
-        // Ya está en estado final pero todavía tiene días
-        proximoEstadoHTML = `
-            <div class="proximo-estado-info estado-final">
-                <div class="dias-proximo critico">⏱️ Quedan ${diasRestantes} día${diasRestantes !== 1 ? 's' : ''}</div>
-                <div class="siguiente-estado">→ Estado final: -----</div>
-            </div>
-        `;
+    } else if (diasRestantes <= 2) {
+        // Crítico: 1-2 días restantes (independiente del estado)
+        if (proximoEstado) {
+            proximoEstadoHTML = `
+                <div class="proximo-estado-info estado-critico">
+                    <div class="dias-proximo critico">⏱️ Quedan ${diasRestantes} día${diasRestantes !== 1 ? 's' : ''}</div>
+                    <div class="siguiente-estado">→ Próximo estado: ${proximoEstado.siguienteEstado}</div>
+                </div>
+            `;
+        } else {
+            proximoEstadoHTML = `
+                <div class="proximo-estado-info estado-critico">
+                    <div class="dias-proximo critico">⏱️ Quedan ${diasRestantes} día${diasRestantes !== 1 ? 's' : ''}</div>
+                    <div class="siguiente-estado">→ Consumir pronto</div>
+                </div>
+            `;
+        }
+    } else {
+        // Normal: más de 2 días (verde/azul)
+        if (proximoEstado) {
+            proximoEstadoHTML = `
+                <div class="proximo-estado-info">
+                    <div class="dias-proximo">⏱️ Quedan ${diasRestantes} día${diasRestantes !== 1 ? 's' : ''}</div>
+                    <div class="siguiente-estado">→ Próximo estado: ${proximoEstado.siguienteEstado}</div>
+                </div>
+            `;
+        } else {
+            // Ya está en último estado según IA, pero tiene muchos días por experiencia del usuario
+            proximoEstadoHTML = `
+                <div class="proximo-estado-info">
+                    <div class="dias-proximo">⏱️ Quedan ${diasRestantes} día${diasRestantes !== 1 ? 's' : ''}</div>
+                    <div class="siguiente-estado">→ Mantener refrigerado</div>
+                </div>
+            `;
+        }
     }
     
     return `
