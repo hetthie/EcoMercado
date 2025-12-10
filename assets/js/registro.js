@@ -138,17 +138,27 @@ function crearTarjetaProducto(producto) {
                 </div>
             </div>
         `;
-    } else if (proximoEstado) {
+    } else if (diasRestantes === 0) {
+        // Vence hoy - estado final
+        proximoEstadoHTML = `
+            <div class="proximo-estado-info estado-final">
+                <div class="dias-proximo critico">⏱️ ¡Vence HOY!</div>
+                <div class="siguiente-estado">→ Último día de venta</div>
+            </div>
+        `;
+    } else if (proximoEstado && diasRestantes > 0) {
+        // Estado normal con días restantes
         proximoEstadoHTML = `
             <div class="proximo-estado-info">
-                <div class="dias-proximo">⏱️ Quedan ${proximoEstado.diasHasta} días</div>
+                <div class="dias-proximo">⏱️ Quedan ${proximoEstado.diasHasta} día${proximoEstado.diasHasta !== 1 ? 's' : ''}</div>
                 <div class="siguiente-estado">→ Próximo estado: ${proximoEstado.siguienteEstado}</div>
             </div>
         `;
-    } else {
+    } else if (!proximoEstado && diasRestantes > 0) {
+        // Ya está en estado final pero todavía tiene días
         proximoEstadoHTML = `
             <div class="proximo-estado-info estado-final">
-                <div class="dias-proximo critico">⏱️ ¡Consumir hoy!</div>
+                <div class="dias-proximo critico">⏱️ Quedan ${diasRestantes} día${diasRestantes !== 1 ? 's' : ''}</div>
                 <div class="siguiente-estado">→ Estado final: -----</div>
             </div>
         `;
@@ -308,6 +318,9 @@ function guardarEdicion() {
     });
     
     cerrarEdicion();
+    
+    // Recargar completamente la lista de productos
+    // Esto recalcula días restantes, próximo estado, alertas, etc.
     cargarProductos();
     
     // Mostrar mensaje de confirmación

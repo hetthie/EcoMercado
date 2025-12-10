@@ -78,7 +78,8 @@ function calcularDiasRestantes(producto) {
     const diasEstimados = producto.diasEstimados || 0;
     const diasTranscurridos = calcularDiasTranscurridos(producto.fechaRegistro);
     const diasRestantes = diasEstimados - diasTranscurridos;
-    return Math.max(0, diasRestantes);
+    // Permitir valores negativos para detectar productos vencidos
+    return diasRestantes;
 }
 
 // Calcular días hasta el siguiente estado
