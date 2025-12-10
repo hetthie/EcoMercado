@@ -162,14 +162,11 @@ function abrirEdicion(id) {
     // Calcular días transcurridos
     const diasTranscurridos = calcularDiasTranscurridos(producto.fechaRegistro);
     
-    // Días estimados originales por la IA
-    const diasEstimadosIA = DIAS_PRODUCTO[producto.producto]?.[producto.estado] || 0;
-    
     // Crear modal de edición
     const modalHTML = `
         <div class="modal-overlay" id="modal-edicion" onclick="cerrarEdicion(event)">
             <div class="modal-content" onclick="event.stopPropagation()">
-                <h3>Editar Estimación de Maduración</h3>
+                <h3>Editar Producto</h3>
                 
                 <div class="info-readonly">
                     <div class="info-row">
@@ -189,26 +186,18 @@ function abrirEdicion(id) {
                 <div class="edit-separator"></div>
                 
                 <div class="form-group">
-                    <label>Duración estimada (días totales):</label>
-                    <div class="estimacion-comparison">
-                        <div class="estimacion-ia">
-                            <span class="label-small">IA estimó:</span>
-                            <span class="value-ia">${diasEstimadosIA} días</span>
-                        </div>
-                        <div class="estimacion-usuario">
-                            <span class="label-small">Tu estimación:</span>
-                            <input 
-                                type="number" 
-                                id="edit-dias-estimados" 
-                                min="1" 
-                                max="30" 
-                                value="${producto.diasEstimados}"
-                                class="input-dias"
-                            >
-                            <span class="dias-suffix">días</span>
-                        </div>
+                    <label>Estimación (días totales):</label>
+                    <div class="input-container-simple">
+                        <input 
+                            type="number" 
+                            id="edit-dias-estimados" 
+                            min="1" 
+                            max="30" 
+                            value="${producto.diasEstimados}"
+                            class="input-dias-simple"
+                        >
+                        <span class="dias-suffix">días</span>
                     </div>
-                    <p class="help-text">💡 Ajusta según tu experiencia con este producto en tu ubicación</p>
                 </div>
                 
                 <div class="resultado-preview" id="preview-resultado">
@@ -228,7 +217,7 @@ function abrirEdicion(id) {
                 </div>
                 
                 <div class="modal-buttons">
-                    <button class="btn-guardar" onclick="guardarEdicion()">💾 Guardar Cambios</button>
+                    <button class="btn-guardar" onclick="guardarEdicion()">💾 Guardar</button>
                     <button class="btn-cancelar" onclick="cerrarEdicion()">❌ Cancelar</button>
                 </div>
             </div>
