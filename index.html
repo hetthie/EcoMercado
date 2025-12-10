@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EcoMercado - Analizador de Alimentos</title>
     <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/alertas.css">
 </head>
 <body>
     <!-- HEADER -->
@@ -63,8 +64,17 @@
     <script src="assets/js/datos.js"></script>
     <script src="assets/js/storage.js"></script>
     <script src="assets/js/navigation.js"></script>
+    <script src="assets/js/alertas.js"></script>
     <script src="assets/js/camera.js"></script>
     <script src="assets/js/api.js"></script>
     <script src="assets/js/analisis.js"></script>
+    
+    <script>
+        // Inicializar alertas al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            inicializarAlertas();
+            actualizarBadgeTab();
+        });
+    </script>
 </body>
 </html>

@@ -6,6 +6,7 @@
     <title>EcoMercado - Registro</title>
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/registro-styles.css">
+    <link rel="stylesheet" href="assets/css/alertas.css">
 </head>
 <body>
     <!-- HEADER -->
@@ -81,6 +82,15 @@
     <script src="assets/js/datos.js"></script>
     <script src="assets/js/storage.js"></script>
     <script src="assets/js/navigation.js"></script>
+    <script src="assets/js/alertas.js"></script>
     <script src="assets/js/registro.js"></script>
+    
+    <script>
+        // Inicializar alertas al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            inicializarAlertas();
+            actualizarBadgeTab();
+        });
+    </script>
 </body>
 </html>

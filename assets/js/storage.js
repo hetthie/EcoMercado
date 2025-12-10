@@ -25,6 +25,23 @@ function guardarProducto(producto) {
     return nuevoProducto;
 }
 
+// Actualizar producto existente
+function actualizarProducto(id, datosActualizados) {
+    let productos = obtenerProductos();
+    const index = productos.findIndex(p => p.id === id);
+    
+    if (index !== -1) {
+        productos[index] = {
+            ...productos[index],
+            ...datosActualizados
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(productos));
+        return productos[index];
+    }
+    
+    return null;
+}
+
 // Eliminar producto por ID
 function eliminarProducto(id) {
     let productos = obtenerProductos();
@@ -46,6 +63,28 @@ function calcularDiasRestantes(producto) {
     const diasTranscurridos = calcularDiasTranscurridos(producto.fechaRegistro);
     const diasRestantes = diasEstimados - diasTranscurridos;
     return Math.max(0, diasRestantes);
+}
+
+// Calcular días hasta el siguiente estado
+function calcularDiasProximoEstado(producto) {
+    const estadosOrden = ['Maduración baja', 'Maduración avanzada', 'Maduración muy avanzada'];
+    const estadoActualIndex = estadosOrden.indexOf(producto.estado);
+    
+    // Si es el último estado o no se encuentra
+    if (estadoActualIndex === -1 || estadoActualIndex === estadosOrden.length - 1) {
+        return null;
+    }
+    
+    // Obtener siguiente estado
+    const siguienteEstado = estadosOrden[estadoActualIndex + 1];
+    
+    // Días restantes del estado actual = días hasta el siguiente estado
+    const diasRestantes = calcularDiasRestantes(producto);
+    
+    return {
+        siguienteEstado: siguienteEstado,
+        diasHasta: diasRestantes
+    };
 }
 
 // Verificar si producto requiere alerta
