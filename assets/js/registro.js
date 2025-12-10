@@ -159,39 +159,76 @@ function abrirEdicion(id) {
     
     productoEnEdicion = producto;
     
+    // Calcular días transcurridos
+    const diasTranscurridos = calcularDiasTranscurridos(producto.fechaRegistro);
+    
+    // Días estimados originales por la IA
+    const diasEstimadosIA = DIAS_PRODUCTO[producto.producto]?.[producto.estado] || 0;
+    
     // Crear modal de edición
     const modalHTML = `
         <div class="modal-overlay" id="modal-edicion" onclick="cerrarEdicion(event)">
             <div class="modal-content" onclick="event.stopPropagation()">
-                <h3>Editar Producto</h3>
+                <h3>Editar Estimación de Maduración</h3>
                 
-                <div class="form-group">
-                    <label>Producto:</label>
-                    <select id="edit-producto">
-                        <option value="Plátano" ${producto.producto === 'Plátano' ? 'selected' : ''}>🍌 Plátano</option>
-                        <option value="Tomate" ${producto.producto === 'Tomate' ? 'selected' : ''}>🍅 Tomate</option>
-                        <option value="Aguacate" ${producto.producto === 'Aguacate' ? 'selected' : ''}>🥑 Aguacate</option>
-                        <option value="Manzana" ${producto.producto === 'Manzana' ? 'selected' : ''}>🍎 Manzana</option>
-                        <option value="Lechuga" ${producto.producto === 'Lechuga' ? 'selected' : ''}>🥬 Lechuga</option>
-                    </select>
+                <div class="info-readonly">
+                    <div class="info-row">
+                        <span class="info-label">Producto:</span>
+                        <span class="info-value">${producto.producto}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Estado:</span>
+                        <span class="info-value">${producto.estado}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Fecha de registro:</span>
+                        <span class="info-value">${new Date(producto.fechaRegistro).toLocaleDateString('es-ES')}</span>
+                    </div>
                 </div>
                 
-                <div class="form-group">
-                    <label>Estado:</label>
-                    <select id="edit-estado">
-                        <option value="Maduración baja" ${producto.estado === 'Maduración baja' ? 'selected' : ''}>Maduración baja</option>
-                        <option value="Maduración avanzada" ${producto.estado === 'Maduración avanzada' ? 'selected' : ''}>Maduración avanzada</option>
-                        <option value="Maduración muy avanzada" ${producto.estado === 'Maduración muy avanzada' ? 'selected' : ''}>Maduración muy avanzada</option>
-                    </select>
-                </div>
+                <div class="edit-separator"></div>
                 
                 <div class="form-group">
-                    <label>Fecha de registro:</label>
-                    <input type="date" id="edit-fecha" value="${producto.fechaRegistro.split('T')[0]}">
+                    <label>Duración estimada (días totales):</label>
+                    <div class="estimacion-comparison">
+                        <div class="estimacion-ia">
+                            <span class="label-small">IA estimó:</span>
+                            <span class="value-ia">${diasEstimadosIA} días</span>
+                        </div>
+                        <div class="estimacion-usuario">
+                            <span class="label-small">Tu estimación:</span>
+                            <input 
+                                type="number" 
+                                id="edit-dias-estimados" 
+                                min="1" 
+                                max="30" 
+                                value="${producto.diasEstimados}"
+                                class="input-dias"
+                            >
+                            <span class="dias-suffix">días</span>
+                        </div>
+                    </div>
+                    <p class="help-text">💡 Ajusta según tu experiencia con este producto en tu ubicación</p>
+                </div>
+                
+                <div class="resultado-preview" id="preview-resultado">
+                    <div class="preview-title">📊 Resultado:</div>
+                    <div class="preview-item">
+                        <span>• Días transcurridos:</span>
+                        <strong>${diasTranscurridos} días</strong>
+                    </div>
+                    <div class="preview-item">
+                        <span>• Días restantes:</span>
+                        <strong id="preview-restantes">${Math.max(0, producto.diasEstimados - diasTranscurridos)} días</strong>
+                    </div>
+                    <div class="preview-item">
+                        <span>• Madurará aproximadamente:</span>
+                        <strong id="preview-fecha">${calcularFechaFutura(producto.fechaRegistro, producto.diasEstimados)}</strong>
+                    </div>
                 </div>
                 
                 <div class="modal-buttons">
-                    <button class="btn-guardar" onclick="guardarEdicion()">💾 Guardar</button>
+                    <button class="btn-guardar" onclick="guardarEdicion()">💾 Guardar Cambios</button>
                     <button class="btn-cancelar" onclick="cerrarEdicion()">❌ Cancelar</button>
                 </div>
             </div>
@@ -199,29 +236,69 @@ function abrirEdicion(id) {
     `;
     
     document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Agregar listener para actualizar preview en tiempo real
+    document.getElementById('edit-dias-estimados').addEventListener('input', actualizarPreview);
+}
+
+// Actualizar preview en tiempo real
+function actualizarPreview() {
+    if (!productoEnEdicion) return;
+    
+    const nuevosDiasEstimados = parseInt(document.getElementById('edit-dias-estimados').value) || 0;
+    const diasTranscurridos = calcularDiasTranscurridos(productoEnEdicion.fechaRegistro);
+    const diasRestantes = Math.max(0, nuevosDiasEstimados - diasTranscurridos);
+    
+    document.getElementById('preview-restantes').textContent = `${diasRestantes} días`;
+    document.getElementById('preview-fecha').textContent = calcularFechaFutura(productoEnEdicion.fechaRegistro, nuevosDiasEstimados);
+}
+
+// Calcular fecha futura
+function calcularFechaFutura(fechaRegistro, diasEstimados) {
+    const fecha = new Date(fechaRegistro);
+    fecha.setDate(fecha.getDate() + diasEstimados);
+    return fecha.toLocaleDateString('es-ES', { 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric' 
+    });
 }
 
 // Guardar edición
 function guardarEdicion() {
     if (!productoEnEdicion) return;
     
-    const nuevoProducto = document.getElementById('edit-producto').value;
-    const nuevoEstado = document.getElementById('edit-estado').value;
-    const nuevaFecha = document.getElementById('edit-fecha').value;
+    const nuevosDiasEstimados = parseInt(document.getElementById('edit-dias-estimados').value);
     
-    // Calcular nuevos días estimados
-    const nuevosDiasEstimados = DIAS_PRODUCTO[nuevoProducto]?.[nuevoEstado] || 0;
+    if (!nuevosDiasEstimados || nuevosDiasEstimados < 1) {
+        alert('Por favor ingresa un número válido de días (mínimo 1)');
+        return;
+    }
     
-    // Actualizar producto
+    // Actualizar producto con nuevos días estimados
     actualizarProducto(productoEnEdicion.id, {
-        producto: nuevoProducto,
-        estado: nuevoEstado,
-        fechaRegistro: new Date(nuevaFecha).toISOString(),
         diasEstimados: nuevosDiasEstimados
     });
     
     cerrarEdicion();
     cargarProductos();
+    
+    // Mostrar mensaje de confirmación
+    mostrarMensajeExito('✅ Estimación actualizada correctamente');
+}
+
+// Mostrar mensaje de éxito
+function mostrarMensajeExito(mensaje) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-success';
+    toast.textContent = mensaje;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add('show'), 100);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
 
 // Cerrar modal de edición

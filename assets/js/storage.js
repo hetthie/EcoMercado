@@ -22,6 +22,11 @@ function guardarProducto(producto) {
     productos.push(nuevoProducto);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(productos));
     
+    // Resetear alertas porque hay cambios en inventario
+    if (typeof resetearAlertasVistas === 'function') {
+        resetearAlertasVistas();
+    }
+    
     return nuevoProducto;
 }
 
@@ -36,6 +41,12 @@ function actualizarProducto(id, datosActualizados) {
             ...datosActualizados
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(productos));
+        
+        // Resetear alertas porque hubo actualización
+        if (typeof resetearAlertasVistas === 'function') {
+            resetearAlertasVistas();
+        }
+        
         return productos[index];
     }
     
@@ -47,6 +58,11 @@ function eliminarProducto(id) {
     let productos = obtenerProductos();
     productos = productos.filter(p => p.id !== id);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(productos));
+    
+    // Resetear alertas porque se eliminó un producto
+    if (typeof resetearAlertasVistas === 'function') {
+        resetearAlertasVistas();
+    }
 }
 
 // Calcular días transcurridos desde el registro

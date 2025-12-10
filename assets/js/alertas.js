@@ -1,5 +1,8 @@
 // ========== SISTEMA DE ALERTAS ==========
 
+// Keys de localStorage para control de alertas
+const ALERTAS_VISTAS_KEY = 'ecomercado_alertas_vistas';
+
 // Inicializar sistema de alertas
 function inicializarAlertas() {
     verificarYMostrarAlertas();
@@ -29,6 +32,13 @@ function verificarYMostrarAlertas() {
         }
     });
     
+    // Verificar si debemos mostrar alerta
+    const deberíaMostrar = deberíaMostrarAlerta(criticos.length, urgentes.length);
+    
+    if (!deberíaMostrar) {
+        return; // No mostrar si el usuario ya la cerró
+    }
+    
     // Mostrar banner si hay alertas
     if (criticos.length > 0) {
         mostrarBannerAlerta('critico', criticos);
@@ -41,11 +51,56 @@ function verificarYMostrarAlertas() {
     }
 }
 
+// Verificar si debería mostrar alerta
+function deberíaMostrarAlerta(cantidadCriticos, cantidadUrgentes) {
+    const alertasVistas = obtenerAlertasVistas();
+    
+    // Si no hay productos críticos ni urgentes, no mostrar
+    if (cantidadCriticos === 0 && cantidadUrgentes === 0) {
+        return false;
+    }
+    
+    // Crear firma única de la situación actual
+    const firmaActual = `criticos:${cantidadCriticos}_urgentes:${cantidadUrgentes}`;
+    
+    // Si ya vio esta alerta exacta, no mostrar
+    if (alertasVistas.firma === firmaActual && alertasVistas.cerrada) {
+        return false;
+    }
+    
+    // Si la cantidad cambió (empeoró o mejoró), mostrar de nuevo
+    return true;
+}
+
+// Obtener alertas vistas
+function obtenerAlertasVistas() {
+    const data = localStorage.getItem(ALERTAS_VISTAS_KEY);
+    if (!data) {
+        return { firma: '', cerrada: false };
+    }
+    return JSON.parse(data);
+}
+
+// Marcar alerta como vista/cerrada
+function marcarAlertaCerrada(cantidadCriticos, cantidadUrgentes) {
+    const firma = `criticos:${cantidadCriticos}_urgentes:${cantidadUrgentes}`;
+    localStorage.setItem(ALERTAS_VISTAS_KEY, JSON.stringify({
+        firma: firma,
+        cerrada: true,
+        timestamp: Date.now()
+    }));
+}
+
+// Resetear alertas vistas (cuando situación cambia)
+function resetearAlertasVistas() {
+    localStorage.removeItem(ALERTAS_VISTAS_KEY);
+}
+
 // Mostrar banner de alerta
 function mostrarBannerAlerta(nivel, productos) {
     const bannerExistente = document.getElementById('alerta-banner');
     if (bannerExistente) {
-        bannerExistente.remove();
+        return; // Ya está visible
     }
     
     let icono, titulo, clase, mensaje;
@@ -74,6 +129,7 @@ function mostrarBannerAlerta(nivel, productos) {
     const banner = document.createElement('div');
     banner.id = 'alerta-banner';
     banner.className = `alerta-banner ${clase}`;
+    banner.setAttribute('data-nivel', nivel);
     banner.innerHTML = `
         <div class="alerta-contenido">
             <div class="alerta-icono">${icono}</div>
@@ -95,14 +151,30 @@ function mostrarBannerAlerta(nivel, productos) {
 // Cerrar banner
 function cerrarBanner() {
     const banner = document.getElementById('alerta-banner');
-    if (banner) {
-        banner.classList.remove('visible');
-        setTimeout(() => banner.remove(), 300);
-    }
+    if (!banner) return;
+    
+    // Contar productos actuales para marcar como vista
+    const productos = obtenerProductos();
+    let criticos = 0;
+    let urgentes = 0;
+    
+    productos.forEach(producto => {
+        const diasRestantes = calcularDiasRestantes(producto);
+        if (diasRestantes === 0) criticos++;
+        else if (diasRestantes === 1) urgentes++;
+    });
+    
+    // Marcar esta alerta como cerrada
+    marcarAlertaCerrada(criticos, urgentes);
+    
+    // Animar salida
+    banner.classList.remove('visible');
+    setTimeout(() => banner.remove(), 300);
 }
 
 // Ir al registro desde alerta
 function irARegistroDesdeAlerta() {
+    cerrarBanner(); // Cerrar antes de navegar
     window.location.href = '/registro.html';
 }
 
@@ -133,6 +205,12 @@ function enviarNotificacionPush(nivel, cantidad) {
     if (!("Notification" in window)) return;
     if (Notification.permission !== "granted") return;
     
+    // Solo enviar notificación si no se ha enviado antes para esta situación
+    const notifKey = `notif_${nivel}_${cantidad}_${new Date().toDateString()}`;
+    if (sessionStorage.getItem(notifKey)) {
+        return; // Ya se envió hoy
+    }
+    
     let titulo, cuerpo, icono;
     
     switch(nivel) {
@@ -155,6 +233,9 @@ function enviarNotificacionPush(nivel, cantidad) {
         tag: 'ecomercado-alerta',
         requireInteraction: true // No desaparece automáticamente
     });
+    
+    // Marcar como enviada
+    sessionStorage.setItem(notifKey, 'true');
     
     // Al hacer clic en la notificación
     notification.onclick = function() {
@@ -196,4 +277,4 @@ function actualizarBadgeTab() {
     } else {
         document.title = 'EcoMercado';
     }
-}
+}v
