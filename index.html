@@ -9,10 +9,16 @@
 </head>
 <body>
     <!-- HEADER -->
-    <header class="app-header" onclick="window.location.href='/index.html'">
+    <!-- HEADER -->
+<header class="app-header">
+    <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="window.location.href='/index.html'">
         <img src="assets/images/logo.png" alt="EcoMercado Logo" class="header-logo">
         <span class="header-text">Eco Mercado</span>
-    </header>
+    </div>
+    <div class="header-actions">
+        <button class="btn-perfil" onclick="irAPerfil()" title="Mi Perfil">👤</button>
+    </div>
+</header>
 
     <!-- MAIN CONTENT -->
     <main class="app-main">

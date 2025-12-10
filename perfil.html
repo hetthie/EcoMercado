@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoMercado - Mi Perfil</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/perfil-styles.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="app-header">
+        <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="window.location.href='/index.html'">
+            <img src="assets/images/logo.png" alt="EcoMercado Logo" class="header-logo">
+            <span class="header-text">Eco Mercado</span>
+        </div>
+        <div class="header-actions">
+            <button class="btn-perfil active" title="Mi Perfil">👤</button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="app-main">
+        <div class="perfil-wrapper">
+            <!-- Header del perfil -->
+            <div class="perfil-header">
+                <div class="perfil-avatar">👤</div>
+                <h1 class="perfil-title">Mi Perfil</h1>
+            </div>
+
+            <!-- Sección: Información Personal -->
+            <div class="perfil-section">
+                <h2 class="section-title">
+                    <span class="section-icon">📝</span>
+                    Información Personal
+                </h2>
+
+                <div class="form-group">
+                    <label for="nombre">Nombre completo</label>
+                    <input 
+                        type="text" 
+                        id="nombre" 
+                        placeholder="Ingresa tu nombre"
+                        class="form-input"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Correo electrónico</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        value="usuario@gmail.com"
+                        class="form-input"
+                        readonly
+                        disabled
+                    >
+                    <small class="input-help">Este correo está vinculado a tu cuenta</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefono">Teléfono de contacto</label>
+                    <input 
+                        type="tel" 
+                        id="telefono" 
+                        placeholder="+593 99 999 9999"
+                        class="form-input"
+                    >
+                </div>
+            </div>
+
+            <!-- Sección: Configuración -->
+            <div class="perfil-section">
+                <h2 class="section-title">
+                    <span class="section-icon">⚙️</span>
+                    Configuración
+                </h2>
+
+                <div class="toggle-group">
+                    <div class="toggle-info">
+                        <div class="toggle-label">Servicio de Intercambio</div>
+                        <div class="toggle-description">
+                            Permite que otros usuarios vean tus productos disponibles para intercambio
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="intercambio">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="perfil-buttons">
+                <button class="btn-guardar" onclick="guardarPerfil()">
+                    💾 Guardar Cambios
+                </button>
+                <button class="btn-cancelar" onclick="volverAtras()">
+                    ← Volver
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER TABS -->
+    <footer class="tabs-footer">
+        <div class="tab-spacer"></div>
+        <a href="/index.html" class="tab">
+            <span class="tab-icon">📷</span>
+            <span class="tab-label">Cámara</span>
+        </a>
+        <a href="/registro.html" class="tab">
+            <span class="tab-icon">📋</span>
+            <span class="tab-label">Registro</span>
+        </a>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="assets/js/perfil.js"></script>
+</body>
+</html>
