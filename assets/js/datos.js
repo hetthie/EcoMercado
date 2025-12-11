@@ -745,7 +745,7 @@ P�rdida: -$2 | Rescate smoothies: Costo $5 → Venta $12-18 (ROI 350-650%) | C
 LECCIÓN: Lechugas = ciclo más corto. Compra solo para 3-4 días máximo. Rotación rápida crítica.`,
     }
 };
-};
+
 
 // Función auxiliar para obtener información del producto
 function obtenerInfoProducto(producto, estado) {
