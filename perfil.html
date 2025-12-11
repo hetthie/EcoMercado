@@ -10,7 +10,7 @@
 <body>
     <!-- HEADER -->
     <header class="app-header">
-        <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="window.location.href='/index.html'">
+        <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="window.location.href='index.html'">
             <img src="assets/images/logo.png" alt="EcoMercado Logo" class="header-logo">
             <span class="header-text">Eco Mercado</span>
         </div>
@@ -84,9 +84,22 @@
                         </div>
                     </div>
                     <label class="toggle-switch">
-                        <input type="checkbox" id="intercambio">
+                        <input type="checkbox" id="intercambio" onchange="validarToggleIntercambio()">
                         <span class="toggle-slider"></span>
                     </label>
+                </div>
+
+                <!-- Aviso de privacidad -->
+                <div class="aviso-privacidad" id="aviso-privacidad" style="display: none;">
+                    <div class="aviso-icono">⚠️</div>
+                    <div class="aviso-texto">
+                        <strong>Al activar este servicio:</strong>
+                        <ul>
+                            <li>Se usará tu ubicación para mostrar productos cercanos</li>
+                            <li>Tu nombre y número telefónico serán visibles para otros usuarios</li>
+                            <li>Otros vendedores podrán contactarte directamente</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
@@ -103,20 +116,20 @@
     </main>
 
     <!-- FOOTER TABS -->
-<footer class="tabs-footer">
-    <a href="intercambios.html" class="tab">
-        <span class="tab-icon">🔄</span>
-        <span class="tab-label">Intercambios</span>
-    </a>
-    <a href="index.html" class="tab">
-        <span class="tab-icon">📷</span>
-        <span class="tab-label">Cámara</span>
-    </a>
-    <a href="registro.html" class="tab">
-        <span class="tab-icon">📋</span>
-        <span class="tab-label">Registro</span>
-    </a>
-</footer>
+    <footer class="tabs-footer">
+        <a href="intercambios.html" class="tab">
+            <span class="tab-icon">🔄</span>
+            <span class="tab-label">Intercambios</span>
+        </a>
+        <a href="index.html" class="tab">
+            <span class="tab-icon">📷</span>
+            <span class="tab-label">Cámara</span>
+        </a>
+        <a href="registro.html" class="tab">
+            <span class="tab-icon">📋</span>
+            <span class="tab-label">Registro</span>
+        </a>
+    </footer>
 
     <!-- Scripts -->
     <script src="assets/js/perfil.js"></script>
