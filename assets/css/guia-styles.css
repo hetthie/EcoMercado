@@ -1,4 +1,4 @@
-/* ========== ESTILOS PARA PÁGINA DE GUÍA ========== */
+/* ========== ESTILOS PARA PÁGINA DE GUÍA MEJORADA ========== */
 
 * {
     margin: 0;
@@ -18,7 +18,7 @@ body {
     border-radius: 30px;
     padding: 30px 25px;
     width: 100%;
-    max-width: 650px;
+    max-width: 750px;
     margin: 0 auto;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     max-height: 90vh;
@@ -128,43 +128,245 @@ body {
 
 /* Contenido de la guía */
 .guide-content {
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    margin-bottom: 15px;
+    box-shadow: none;
+}
+
+/* ========== SECCIONES MEJORADAS ========== */
+
+.guide-section {
     background: white;
     border-radius: 16px;
     padding: 25px;
     margin-bottom: 15px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
-.guide-section {
-    margin-bottom: 25px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #f1f5f9;
+.guide-section:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
-.guide-section:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
+/* Banner introductorio */
+.intro-banner {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border-left: 4px solid #3b82f6;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
-.section-header {
-    font-size: 15px;
+.intro-icon {
+    font-size: 40px;
+    flex-shrink: 0;
+}
+
+.intro-text {
+    font-size: 16px;
     font-weight: 700;
-    color: white;
-    margin-bottom: 15px;
-    padding: 12px 15px;
+    color: #1e40af;
+    line-height: 1.6;
+}
+
+/* Header de sección mejorado */
+.section-header-enhanced {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 15px;
     background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
-    border-radius: 10px;
-    text-align: center;
+    border-radius: 12px;
     box-shadow: 0 2px 8px rgba(74, 222, 128, 0.3);
 }
 
-.guide-text {
-    font-size: 13px;
+.section-number {
+    width: 35px;
+    height: 35px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+}
+
+.section-title-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+    flex: 1;
+    line-height: 1.4;
+}
+
+/* Contenido de sección */
+.section-content {
+    padding: 0;
+}
+
+.content-paragraph {
+    font-size: 14px;
     color: #334155;
-    line-height: 1.9;
-    white-space: pre-line;
-    text-align: left;
+    line-height: 1.8;
+    margin-bottom: 12px;
+}
+
+.content-paragraph:last-child {
+    margin-bottom: 0;
+}
+
+/* Listas con bullets mejoradas */
+.bullet-list {
+    margin: 15px 0;
+    padding-left: 0;
+    list-style: none;
+}
+
+.bullet-list li {
+    font-size: 14px;
+    color: #334155;
+    line-height: 1.8;
+    margin-bottom: 10px;
+    padding-left: 25px;
+    position: relative;
+}
+
+.bullet-list li:before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: #4ade80;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.bullet-list li:last-child {
+    margin-bottom: 0;
+}
+
+/* ========== ESTILOS POR TIPO DE SECCIÓN ========== */
+
+/* Secciones de ventas */
+.section-ventas {
+    border-left: 4px solid #3b82f6;
+}
+
+.section-ventas .section-header-enhanced {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.section-ventas .bullet-list li:before {
+    content: "💰";
+}
+
+/* Secciones de recetas */
+.section-recetas {
+    border-left: 4px solid #f59e0b;
+}
+
+.section-recetas .section-header-enhanced {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.section-recetas .bullet-list li:before {
+    content: "🍳";
+}
+
+/* Secciones de conservación */
+.section-conservacion {
+    border-left: 4px solid #8b5cf6;
+}
+
+.section-conservacion .section-header-enhanced {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.section-conservacion .bullet-list li:before {
+    content: "📦";
+}
+
+/* Secciones de contactos */
+.section-contactos {
+    border-left: 4px solid #ec4899;
+}
+
+.section-contactos .section-header-enhanced {
+    background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+}
+
+.section-contactos .bullet-list li:before {
+    content: "📞";
+}
+
+/* Secciones urgentes */
+.section-urgente {
+    border-left: 4px solid #ef4444;
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+}
+
+.section-urgente .section-header-enhanced {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.section-urgente .bullet-list li:before {
+    content: "⚠️";
+}
+
+/* Secciones económicas */
+.section-economico {
+    border-left: 4px solid #10b981;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+}
+
+.section-economico .section-header-enhanced {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.section-economico .bullet-list li:before {
+    content: "💵";
+}
+
+/* Error section */
+.error-section {
+    text-align: center;
+    padding: 60px 30px;
+}
+
+.error-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+}
+
+.error-text {
+    font-size: 16px;
+    color: #64748b;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.link-button {
+    display: inline-block;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.link-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
 }
 
 /* Tarjeta de consejo */
@@ -258,12 +460,34 @@ body {
         font-size: 20px;
     }
 
-    .guide-text {
-        font-size: 12px;
+    .guide-section {
+        padding: 20px;
     }
 
-    .section-header {
+    .section-header-enhanced {
+        padding: 12px;
+    }
+
+    .section-number {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+    }
+
+    .section-title-text {
+        font-size: 14px;
+    }
+
+    .content-paragraph,
+    .bullet-list li {
         font-size: 13px;
-        padding: 10px 12px;
+    }
+
+    .intro-icon {
+        font-size: 30px;
+    }
+
+    .intro-text {
+        font-size: 14px;
     }
 }

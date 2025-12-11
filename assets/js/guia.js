@@ -1,4 +1,4 @@
-// ========== LÓGICA DE LA PÁGINA DE GUÍA ==========
+// ========== LÓGICA DE LA PÁGINA DE GUÍA MEJORADA ==========
 
 // Mapeo de emojis por producto
 const EMOJIS_PRODUCTOS = {
@@ -34,7 +34,7 @@ function obtenerIconoEstado(estado) {
     return '⏱️';
 }
 
-// Función para procesar el texto de la guía en secciones
+// Función mejorada para procesar el texto de la guía en secciones estructuradas
 function procesarGuiaEnSecciones(textoGuia) {
     const secciones = [];
     
@@ -46,65 +46,129 @@ function procesarGuiaEnSecciones(textoGuia) {
         
         if (lineas.length === 0) return;
         
-        // Buscar líneas que parecen títulos (tienen emojis al inicio)
+        let seccionActual = null;
+        let contenidoActual = [];
+        
         for (let i = 0; i < lineas.length; i++) {
             const linea = lineas[i].trim();
             
-            // Si la línea tiene emoji al inicio, es un título de sección
+            // Detectar títulos de sección (con emojis al inicio)
             if (/^[🎯📍💵👥🔥📞🎁🍳📦🎨💡📊⚠️🥗🧃🍪🍞🍦🥤🍲🔴🟡🟢✅]/.test(linea)) {
-                // El título es esta línea
-                const titulo = linea;
-                
-                // El contenido es todo lo que sigue hasta el próximo título o fin del bloque
-                let contenido = [];
-                for (let j = i + 1; j < lineas.length; j++) {
-                    const siguienteLinea = lineas[j].trim();
-                    // Si encontramos otro título, parar
-                    if (/^[🎯📍💵👥🔥📞🎁🍳📦🎨💡📊⚠️🥗🧃🍪🍞🍦🥤🍲🔴🟡🟢✅]/.test(siguienteLinea)) {
-                        break;
-                    }
-                    contenido.push(siguienteLinea);
-                }
-                
-                if (contenido.length > 0) {
+                // Si ya había una sección, guardarla
+                if (seccionActual && contenidoActual.length > 0) {
                     secciones.push({
-                        titulo: titulo,
-                        contenido: contenido.join('\n')
+                        titulo: seccionActual,
+                        contenido: contenidoActual.join('\n'),
+                        tipo: detectarTipoSeccion(seccionActual)
                     });
                 }
                 
-                // Saltar las líneas que ya procesamos
-                i += contenido.length;
+                // Iniciar nueva sección
+                seccionActual = linea;
+                contenidoActual = [];
+            } else if (seccionActual) {
+                // Agregar contenido a la sección actual
+                contenidoActual.push(linea);
+            } else {
+                // Texto introductorio (antes de cualquier sección)
+                if (linea.length > 0) {
+                    secciones.push({
+                        titulo: null,
+                        contenido: linea,
+                        tipo: 'intro'
+                    });
+                }
             }
         }
         
-        // Si el bloque no tiene títulos con emojis, tratarlo como una sección completa
-        if (secciones.length === 0 && lineas.length > 0) {
-            // La primera línea es el título
-            const titulo = lineas[0];
-            const contenido = lineas.slice(1).join('\n');
-            
-            if (contenido.trim()) {
-                secciones.push({ titulo, contenido });
-            }
+        // Guardar última sección
+        if (seccionActual && contenidoActual.length > 0) {
+            secciones.push({
+                titulo: seccionActual,
+                contenido: contenidoActual.join('\n'),
+                tipo: detectarTipoSeccion(seccionActual)
+            });
         }
     });
     
     return secciones;
 }
 
-// Función para renderizar la guía
+// Detectar tipo de sección para aplicar estilos específicos
+function detectarTipoSeccion(titulo) {
+    if (!titulo) return 'normal';
+    
+    const tituloLower = titulo.toLowerCase();
+    
+    if (tituloLower.includes('venta') || tituloLower.includes('precio') || tituloLower.includes('estrategia')) {
+        return 'ventas';
+    } else if (tituloLower.includes('receta') || tituloLower.includes('preparación') || tituloLower.includes('uso')) {
+        return 'recetas';
+    } else if (tituloLower.includes('conservación') || tituloLower.includes('almacenamiento')) {
+        return 'conservacion';
+    } else if (tituloLower.includes('contacto') || tituloLower.includes('cliente')) {
+        return 'contactos';
+    } else if (tituloLower.includes('urgente') || tituloLower.includes('emergencia') || tituloLower.includes('crítico')) {
+        return 'urgente';
+    } else if (tituloLower.includes('económico') || tituloLower.includes('pérdida') || tituloLower.includes('cálculo')) {
+        return 'economico';
+    }
+    
+    return 'normal';
+}
+
+// Formatear contenido con bullets y estructura
+function formatearContenido(contenido) {
+    // Separar por líneas
+    const lineas = contenido.split('\n');
+    let html = '';
+    let enLista = false;
+    
+    lineas.forEach(linea => {
+        const lineaTrim = linea.trim();
+        
+        if (!lineaTrim) {
+            if (enLista) {
+                html += '</ul>';
+                enLista = false;
+            }
+            return;
+        }
+        
+        // Detectar bullets (•, -, →)
+        if (/^[•\-→]/.test(lineaTrim)) {
+            if (!enLista) {
+                html += '<ul class="bullet-list">';
+                enLista = true;
+            }
+            html += `<li>${lineaTrim.substring(1).trim()}</li>`;
+        } else {
+            if (enLista) {
+                html += '</ul>';
+                enLista = false;
+            }
+            html += `<p class="content-paragraph">${lineaTrim}</p>`;
+        }
+    });
+    
+    if (enLista) {
+        html += '</ul>';
+    }
+    
+    return html;
+}
+
+// Función para renderizar la guía con diseño mejorado
 function renderizarGuia() {
     const { producto, estado } = obtenerParametrosURL();
     
     // Validar parámetros
     if (!producto || !estado) {
         document.getElementById('guideContent').innerHTML = `
-            <div class="guide-section">
-                <p style="text-align: center; color: #ef4444; padding: 40px 20px;">
-                    ⚠️ Error: No se especificó producto o estado<br><br>
-                    <a href="/registro.html" style="color: #3b82f6; text-decoration: underline;">Volver al registro</a>
-                </p>
+            <div class="guide-section error-section">
+                <div class="error-icon">⚠️</div>
+                <p class="error-text">No se especificó producto o estado</p>
+                <a href="registro.html" class="link-button">Volver al registro</a>
             </div>
         `;
         return;
@@ -126,12 +190,10 @@ function renderizarGuia() {
     
     if (!guiaTexto) {
         document.getElementById('guideContent').innerHTML = `
-            <div class="guide-section">
-                <p style="text-align: center; color: #ef4444; padding: 40px 20px;">
-                    ⚠️ No se encontró guía para:<br>
-                    <strong>${producto} - ${estado}</strong><br><br>
-                    <a href="/registro.html" style="color: #3b82f6; text-decoration: underline;">Volver al registro</a>
-                </p>
+            <div class="guide-section error-section">
+                <div class="error-icon">❌</div>
+                <p class="error-text">No se encontró guía para:<br><strong>${producto} - ${estado}</strong></p>
+                <a href="registro.html" class="link-button">Volver al registro</a>
             </div>
         `;
         return;
@@ -150,18 +212,48 @@ function renderizarGuia() {
         return;
     }
     
-    // Generar HTML con las secciones
+    // Generar HTML con las secciones estructuradas
     const guideContainer = document.getElementById('guideContent');
     guideContainer.innerHTML = '';
     
-    secciones.forEach(seccion => {
+    secciones.forEach((seccion, index) => {
         const seccionDiv = document.createElement('div');
-        seccionDiv.className = 'guide-section';
         
-        seccionDiv.innerHTML = `
-            <div class="section-header">${seccion.titulo}</div>
-            <div class="guide-text">${seccion.contenido}</div>
-        `;
+        // Aplicar clase según tipo
+        let claseSeccion = 'guide-section';
+        if (seccion.tipo !== 'intro' && seccion.tipo !== 'normal') {
+            claseSeccion += ` section-${seccion.tipo}`;
+        }
+        
+        seccionDiv.className = claseSeccion;
+        
+        if (seccion.tipo === 'intro') {
+            // Texto introductorio (destacado)
+            seccionDiv.innerHTML = `
+                <div class="intro-banner">
+                    <div class="intro-icon">${obtenerIconoEstado(estado)}</div>
+                    <div class="intro-text">${seccion.contenido}</div>
+                </div>
+            `;
+        } else if (seccion.titulo) {
+            // Sección con título
+            seccionDiv.innerHTML = `
+                <div class="section-header-enhanced">
+                    <div class="section-number">${index}</div>
+                    <div class="section-title-text">${seccion.titulo}</div>
+                </div>
+                <div class="section-content">
+                    ${formatearContenido(seccion.contenido)}
+                </div>
+            `;
+        } else {
+            // Contenido sin título
+            seccionDiv.innerHTML = `
+                <div class="section-content">
+                    ${formatearContenido(seccion.contenido)}
+                </div>
+            `;
+        }
         
         guideContainer.appendChild(seccionDiv);
     });
@@ -169,7 +261,7 @@ function renderizarGuia() {
 
 // Función para volver al registro
 function volverARegistro() {
-    window.location.href = '/registro.html';
+    window.location.href = 'registro.html';
 }
 
 // Inicializar al cargar la página
