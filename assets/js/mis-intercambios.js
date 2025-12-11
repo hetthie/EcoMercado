@@ -17,8 +17,8 @@ let productosSeleccionados = new Set();
 
 // Cargar productos al iniciar
 document.addEventListener('DOMContentLoaded', function() {
-    cargarProductosDisponibles();
-    cargarIntercambiosGuardados();
+    cargarIntercambiosGuardados(); // PRIMERO cargar guardados
+    cargarProductosDisponibles();  // LUEGO renderizar
 });
 
 // Obtener productos desde LocalStorage
@@ -30,7 +30,29 @@ function obtenerProductos() {
 // Obtener intercambios guardados
 function obtenerIntercambiosGuardados() {
     const intercambios = localStorage.getItem(STORAGE_KEY_MIS_INTERCAMBIOS);
-    return intercambios ? JSON.parse(intercambios) : { productosOfrecidos: [] };
+    if (!intercambios) {
+        return { productosOfrecidos: [] };
+    }
+    
+    try {
+        return JSON.parse(intercambios);
+    } catch (e) {
+        console.error('Error al parsear intercambios:', e);
+        return { productosOfrecidos: [] };
+    }
+}
+
+// Cargar intercambios guardados y marcar checkboxes
+function cargarIntercambiosGuardados() {
+    const intercambios = obtenerIntercambiosGuardados();
+    productosSeleccionados.clear();
+    
+    // Agregar todos los IDs guardados al Set
+    intercambios.productosOfrecidos.forEach(productoId => {
+        productosSeleccionados.add(Number(productoId)); // Asegurar que sea número
+    });
+    
+    console.log('Productos cargados desde LocalStorage:', Array.from(productosSeleccionados));
 }
 
 // Cargar productos disponibles
@@ -55,21 +77,13 @@ function cargarProductosDisponibles() {
     listaContainer.innerHTML = productos.map(producto => crearItemProducto(producto)).join('');
 }
 
-// Cargar intercambios guardados y marcar checkboxes
-function cargarIntercambiosGuardados() {
-    const intercambios = obtenerIntercambiosGuardados();
-    productosSeleccionados.clear();
-    
-    intercambios.productosOfrecidos.forEach(productoId => {
-        productosSeleccionados.add(productoId);
-    });
-}
-
 // Crear item de producto
 function crearItemProducto(producto) {
     const emoji = EMOJIS[producto.producto] || '🍎';
     const isSeleccionado = productosSeleccionados.has(producto.id);
     const diasRestantes = calcularDiasRestantes(producto);
+    
+    console.log(`Producto ${producto.id} (${producto.producto}): seleccionado=${isSeleccionado}`);
     
     return `
         <div class="producto-intercambio-item ${isSeleccionado ? 'seleccionado' : ''}" id="producto-${producto.id}">
@@ -107,11 +121,15 @@ function toggleProducto(productoId) {
         productosSeleccionados.delete(productoId);
         checkbox.classList.remove('checked');
         item.classList.remove('seleccionado');
+        console.log(`Producto ${productoId} DESMARCADO`);
     } else {
         productosSeleccionados.add(productoId);
         checkbox.classList.add('checked');
         item.classList.add('seleccionado');
+        console.log(`Producto ${productoId} MARCADO`);
     }
+    
+    console.log('Estado actual:', Array.from(productosSeleccionados));
 }
 
 // Guardar intercambios
@@ -122,6 +140,8 @@ function guardarIntercambios() {
     };
     
     localStorage.setItem(STORAGE_KEY_MIS_INTERCAMBIOS, JSON.stringify(intercambios));
+    
+    console.log('Guardado en LocalStorage:', intercambios);
     
     mostrarToast('✅ Intercambios actualizados correctamente');
     
